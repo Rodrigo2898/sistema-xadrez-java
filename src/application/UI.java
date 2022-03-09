@@ -30,21 +30,26 @@ public class UI { // Interface do usuário
 	public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
 	public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
+	// https://stackoverflow.com/questions/2979383/java-clear-the-console
+	public static void clearScreen() { //limpando tela
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
+	}
+
 	public static ChessPosition readChessPosition(Scanner sc) {
 		try {
 			String s = sc.nextLine();
-			char columm = s.charAt(0); //Transformando o primeiro caractere da String em char
-			int row = Integer.parseInt(s.substring(1)); //recortando o String a partir da posição 1,
+			char columm = s.charAt(0); // Transformando o primeiro caractere da String em char
+			int row = Integer.parseInt(s.substring(1)); // recortando o String a partir da posição 1,
 														// e converter o resultado para inteiro
 			return new ChessPosition(columm, row);
-		}
-		catch (RuntimeException e){
-			throw new InputMismatchException("Error reading ChessPosition. Valid values are from a1 to h8."); 
-					  //erro de entrada de dados
+		} 
+		catch (RuntimeException e) {
+			throw new InputMismatchException("Error reading ChessPosition. Valid values are from a1 to h8.");
+			// erro de entrada de dados
 		}
 	}
-	
-	
+
 	public static void printBoard(ChessPiece[][] pieces) {
 		for (int i = 0; i < pieces.length; i++) {
 			System.out.print((8 - i) + " ");
@@ -56,18 +61,16 @@ public class UI { // Interface do usuário
 		System.out.println(" a b c d e f g h");
 	}
 
-	private static void printPiece(ChessPiece piece) { //imprimindo peças
-    	if (piece == null) {
-            System.out.print("-");
-        }
-        else {
-            if (piece.getColor() == Color.WHITE) {
-                System.out.print(ANSI_WHITE + piece + ANSI_RESET);
-            }
-            else {
-                System.out.print(ANSI_YELLOW + piece + ANSI_RESET);
-            }
-        }
-        System.out.print(" ");
+	private static void printPiece(ChessPiece piece) { // imprimindo peças
+		if (piece == null) {
+			System.out.print("-");
+		} else {
+			if (piece.getColor() == Color.WHITE) {
+				System.out.print(ANSI_WHITE + piece + ANSI_RESET);
+			} else {
+				System.out.print(ANSI_YELLOW + piece + ANSI_RESET);
+			}
+		}
+		System.out.print(" ");
 	}
 }
