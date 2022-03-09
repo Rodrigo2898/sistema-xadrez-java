@@ -10,7 +10,14 @@ public class Rei extends ChessPiece {
 		super(board, color);
 	}
 	
+	@Override
 	public String toString() {
 		return "R"; // R = Rei
+	}
+
+	@Override
+	public boolean[][] possibleMoves() {
+		boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumms()];
+		return mat;
 	}
 }
