@@ -26,6 +26,11 @@ public class Position {
 		this.columm = columm;
 	}
 	
+	public void setValues(int row, int columm) { //atualizando os valores de uma posição
+		this.row = row;
+		this.columm = columm;
+	}
+	
 	@Override
 	public String toString() {
 		//Imprimindo a posição na tela
