@@ -33,10 +33,17 @@ public class Program {
 				System.out.print("Destino: ");
 				ChessPosition target = UI.readChessPosition(sc);
 				
+				
 				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);
 				
 				if(capturedPiece != null) {
 					captured.add(capturedPiece);
+				}
+				
+				if(chessMatch.getPromocao() != null) {
+					System.out.println("Enter piece for promotion (Q/C/T/B)");
+					String type = sc.nextLine();
+					chessMatch.replacePromotedPiece(type);
 				}
 			}
 			catch(ChessException e) {
