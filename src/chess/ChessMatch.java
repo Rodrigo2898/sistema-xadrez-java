@@ -21,6 +21,7 @@ public class ChessMatch {
 	private Board board;
 	private boolean check;
 	private boolean checkMate;
+	private ChessPiece enPassantVulnerable;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -46,6 +47,10 @@ public class ChessMatch {
 	
 	public boolean getCheckMate() {
 		return checkMate;
+	}
+	
+	public ChessPiece getEnPassantVulnerable() {
+		return enPassantVulnerable;
 	}
 	
 	public ChessPiece[][] getPieces() { //retornando uma matriz de peças correspondentes a partida
@@ -77,6 +82,8 @@ public class ChessMatch {
 			throw new ChessException("You can't put yourself in check");
 		}
 		
+		ChessPiece movedPiece = (ChessPiece)board.piece(target);
+		
 		check = (testCheck(opponent(currentPlayer))) ? true : false;
 		
 		if(testCheckMate(opponent(currentPlayer))) {
@@ -84,6 +91,14 @@ public class ChessMatch {
 		}
 		else {
 			nextTurn();
+		}
+		
+		// Movimento especial en passant
+		if(movedPiece instanceof Peao && (target.getRow() == source.getRow() - 2 || target.getRow() == source.getRow() + 2)) {
+			enPassantVulnerable = movedPiece;
+		}
+		else {
+			enPassantVulnerable = null;
 		}
 		
 		return (ChessPiece)capturedPiece;
@@ -118,6 +133,21 @@ public class ChessMatch {
 			torre.increaseMoveCount();
 		}
 		
+		// Movimento especial en passant
+		if(p instanceof Peao) {
+			if(source.getColumm() != target.getColumm() && capturedPiece == null) {
+				Position peaoPosicao;
+				if(p.getColor() == Color.WHITE) {
+					peaoPosicao = new Position(target.getRow() + 1, target.getColumm());
+				}
+				else {
+					peaoPosicao = new Position(target.getRow() - 1, target.getColumm());
+				}
+				capturedPiece = board.removePiece(peaoPosicao);
+				capturedPieces.add(capturedPiece);
+				piecesOnTheBoard.remove(capturedPiece);
+			}
+		}
 		return capturedPiece; //retornando a peça capturada
 	}
 	           //desfazer movimento
@@ -149,6 +179,22 @@ public class ChessMatch {
 			board.placePiece(torre, sourceT);
 			torre.decreaseMoveCount();
 		}
+		
+		// Movimento especial en passant
+		if(p instanceof Peao) {
+			if(source.getColumm() != target.getColumm() && capturedPiece == enPassantVulnerable) {
+				ChessPiece peao = (ChessPiece)board.removePiece(target);
+				Position peaoPosicao;
+				if(p.getColor() == Color.WHITE) {
+					peaoPosicao = new Position(3, target.getColumm());
+				}
+				else {
+					peaoPosicao = new Position(4, target.getColumm());
+				}
+				board.placePiece(peao, peaoPosicao);
+			}
+		}
+		
 	}
 	
 	private void validateSourcePosition(Position position) {
@@ -245,18 +291,18 @@ public class ChessMatch {
 		placeNewPiece('b', 1, new Cavalo(board, Color.WHITE));
 		placeNewPiece('c', 1, new Bispo(board, Color.WHITE));
 		placeNewPiece('d', 1, new Rainha(board, Color.WHITE));
-		placeNewPiece('e', 1, new Rei(board, Color.WHITE, this));
+		placeNewPiece('e', 1, new Rei(board, Color.WHITE, this)); //o this está colocando referência para a partida
 		placeNewPiece('f', 1, new Bispo(board, Color.WHITE));
 		placeNewPiece('g', 1, new Cavalo(board, Color.WHITE));
 		placeNewPiece('h', 1, new Torre(board, Color.WHITE));
-		placeNewPiece('a', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('b', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('c', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('d', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('e', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('f', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('g', 2, new Peao(board, Color.WHITE));
-		placeNewPiece('h', 2, new Peao(board, Color.WHITE));
+		placeNewPiece('a', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('b', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('c', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('d', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('e', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('f', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('g', 2, new Peao(board, Color.WHITE, this));
+		placeNewPiece('h', 2, new Peao(board, Color.WHITE, this));
 		
 		placeNewPiece('a', 8, new Torre(board, Color.BLACK));
 		placeNewPiece('b', 8, new Cavalo(board, Color.BLACK));
@@ -266,14 +312,14 @@ public class ChessMatch {
 		placeNewPiece('f', 8, new Bispo(board, Color.BLACK));
 		placeNewPiece('g', 8, new Cavalo(board, Color.BLACK));
 		placeNewPiece('h', 8, new Torre(board, Color.BLACK));
-		placeNewPiece('a', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('b', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('c', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('d', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('e', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('f', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('g', 7, new Peao(board, Color.BLACK));
-		placeNewPiece('h', 7, new Peao(board, Color.BLACK));
+		placeNewPiece('a', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('b', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('c', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('d', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('e', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('f', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('g', 7, new Peao(board, Color.BLACK, this));
+		placeNewPiece('h', 7, new Peao(board, Color.BLACK, this));
 		
 	}
 }
